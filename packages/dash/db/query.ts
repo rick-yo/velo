@@ -1,8 +1,9 @@
+import { Duration, unixTimestamp } from '@/lib/common';
 import _knex, { Knex } from 'knex';
 import { Metric } from 'knex/types/tables';
-import { sumBy } from 'lodash-es';
+import { sumBy, toNumber } from 'lodash-es';
 
-const knex = _knex({
+export const knex = _knex({
   client: 'sqlite3',
   connection: {
     filename: './velo.sqlite',
@@ -11,7 +12,8 @@ const knex = _knex({
 
 await up(knex);
 
-export type MetricToInsert = Omit<Metric, 'id' | 'created_at' | 'updated_at'>;
+export type MetricToInsert = Omit<Metric, 'id' | 'created_at'> &
+  Partial<Pick<Metric, 'created_at'>>;
 
 export function insertMetric(metric: MetricToInsert) {
   return knex<Metric>('metrics').insert(metric);
@@ -24,74 +26,80 @@ export interface MetricQueryParam {
   route?: string;
 }
 
-type MetricInterval = { avg_value: number; created_at: string };
+export type MetricInterval = { avg_value: number; date: string };
 type MetricsResponse = {
   average: number;
   intervals: MetricInterval[];
 };
 
-export async function getIntervalMetrics({
+export const getMetric = async ({
   metric,
   device,
   period,
   route,
-}: MetricQueryParam): Promise<MetricsResponse> {
+}: MetricQueryParam): Promise<MetricsResponse> => {
   const intervals: MetricInterval[] = await knex<Metric>('metrics')
+    .select(groupByPeriod(period))
+    .avg('value as avg_value')
     .where({
       name: metric,
-      route,
       device,
     })
     .andWhere('created_at', '>', createdAt(period))
-    .avg('value as avg_value')
-    .groupBy(groupByPeriod(period));
+    .modify((query) => {
+      if (route) {
+        query.where({ route });
+      }
+    })
+    .groupBy('date');
 
   const sum = sumBy(intervals, 'avg_value');
-  const average = sum / intervals.length;
+  const average = sum ? toNumber((sum / intervals.length).toFixed(2)) : 0;
   return {
     average,
-    intervals,
+    intervals: intervals.map((item) => ({
+      ...item,
+      avg_value: toNumber(item.avg_value.toFixed(2)),
+    })),
   };
-}
+};
 
 export async function up(knex: Knex): Promise<void> {
-  await knex.schema.createTable('metrics', (table) => {
-    table.increments('id').primary();
-    table.string('url').notNullable();
-    table.string('ip');
-    table.string('ua');
-    table.string('route');
+  try {
+    const exists = await knex.schema.hasTable('metrics');
+    if (exists) return;
+    await knex.schema.createTable('metrics', (table) => {
+      table.increments('id').primary();
+      table.string('url').notNullable();
+      table.string('ip');
+      table.string('ua');
+      table.string('route');
 
-    table
-      .enu('name', ['CLS', 'FCP', 'FID', 'INP', 'LCP', 'TTFB'])
-      .notNullable();
-    table
-      .enu('device', ['mobile', 'desktop'])
-      .notNullable();
-    table.float('value').notNullable();
-    table.string('metric_id');
+      table
+        .enu('name', ['CLS', 'FCP', 'FID', 'INP', 'LCP', 'TTFB'])
+        .notNullable();
+      table.enu('device', ['mobile', 'desktop']).notNullable();
+      table.float('value').notNullable();
+      table.string('metric_id');
 
-    table.timestamp('created_at').defaultTo(knex.fn.now());
-    table.timestamp('updated_at').defaultTo(knex.fn.now());
-  });
+      table.timestamp('created_at').defaultTo(knex.fn.now());
+    });
+  } catch (error) {
+    console.warn(error);
+  }
 }
 
-const ONE_DAY = 24 * 60 * 60 * 1000;
-const ONE_WEEK = 7 * ONE_DAY;
-const ONE_MONTH = 30 * ONE_DAY;
-const ONE_YEAR = 365 * ONE_DAY;
-
 function createdAt(period: MetricQueryParam['period']) {
-  const now = new Date().getTime();
+  const now = unixTimestamp();
   switch (period) {
     case '24h':
-      return now - ONE_DAY;
+      return now - Duration.day;
     case '7d':
-      return now - ONE_WEEK;
+      return now - Duration.week;
     case '30d':
-      return now - ONE_MONTH;
+      return now - Duration.month;
     case '365d':
-      return now - ONE_YEAR;
+      return now - Duration.year;
     default:
       return 0;
   }
@@ -99,7 +107,7 @@ function createdAt(period: MetricQueryParam['period']) {
 
 function groupByPeriod(period: MetricQueryParam['period']) {
   if (period === '24h') {
-    return knex.raw("strftime('%H', created_at)");
+    return knex.raw("STRFTIME('%H%P', created_at, 'unixepoch') AS date");
   }
-  return knex.raw("strftime('%m-%d', created_at)");
+  return knex.raw("STRFTIME('%m-%d', created_at, 'unixepoch') AS date");
 }

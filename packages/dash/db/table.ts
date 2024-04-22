@@ -11,8 +11,7 @@ declare module 'knex/types/tables' {
     value: number;
     metric_id: string | null;
 
-    created_at: string;
-    updated_at: string;
+    created_at: number;
   }
 
   interface Tables {

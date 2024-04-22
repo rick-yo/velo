@@ -19,6 +19,7 @@ build
 # misc
 .DS_Store
 *.pem
+velo.sqlite
 
 # debug
 npm-debug.log*

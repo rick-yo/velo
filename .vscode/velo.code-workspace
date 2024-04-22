@@ -6,5 +6,8 @@
     {
       "path": ".."
     }
-  ]
+  ],
+  "settings": {
+    "cSpell.words": ["Contentful", "TTFB", "velo"]
+  }
 }

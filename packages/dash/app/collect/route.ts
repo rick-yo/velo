@@ -1,4 +1,4 @@
-import { insertMetric } from '@/db/query';
+import { MetricToInsert, insertMetric } from '@/db/query';
 import { Metric } from 'knex/types/tables';
 import { toNumber } from 'lodash-es';
 import { headers } from 'next/headers';
@@ -18,7 +18,7 @@ export async function GET(request: Request) {
       status: 400,
     });
 
-  const metic: Omit<Metric, 'id' | 'created_at' | 'updated_at'> = {
+  const metic: MetricToInsert = {
     ip,
     ua,
     url: url.toString(),
