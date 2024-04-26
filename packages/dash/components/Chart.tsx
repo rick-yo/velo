@@ -16,8 +16,8 @@ import {
 } from 'recharts';
 
 export function Chart({ intervals, searchParams }: { intervals: MetricInterval[] } & SearchParamProps) {
-  const { metric } = getMetricQueryParam(searchParams)
-  const metricName = metricNames.find(item => item.value === metric)?.label
+  const { name } = getMetricQueryParam(searchParams)
+  const metricName = metricNames.find(item => item.value === name)?.label
 
   return (
     <ResponsiveContainer className="flex-1 py-1" height={500}>

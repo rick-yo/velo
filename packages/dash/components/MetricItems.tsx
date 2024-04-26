@@ -25,7 +25,7 @@ async function MetricValue({
   searchParams,
 }: { name: Metric['name'] } & SearchParamProps) {
   const { device, period } = getMetricQueryParam(searchParams);
-  const { average } = await getMetric({ metric: name, device, period });
+  const { average } = await getMetric({ name, device, period });
 
   return <Heading size="4">{average}</Heading>;
 }

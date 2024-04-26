@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, Flex, Separator } from '@radix-ui/themes';
+import { Card, Flex } from '@radix-ui/themes';
 import SegmentedControl from './SegmentedControl';
 import { SearchParamProps } from '@/lib/type';
 import { useSetSearchParam } from '@/lib/useSetSearchParam';

@@ -14,14 +14,14 @@ export function getMetricQueryParam(
   const route = isString(searchParams['route'])
     ? searchParams['route']
     : undefined;
-  const metric = isString(searchParams['metric'])
-    ? (searchParams['metric'] as MetricQueryParam['metric'])
+  const name = isString(searchParams['name'])
+    ? (searchParams['name'] as MetricQueryParam['name'])
     : 'LCP';
 
   return {
     device,
     period,
     route,
-    metric,
+    name,
   };
 }

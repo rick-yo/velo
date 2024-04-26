@@ -22,7 +22,7 @@ export function insertMetric(metric: MetricToInsert) {
 export interface MetricQueryParam {
   device: Metric['device'];
   period: '24h' | '7d' | '30d' | '365d';
-  metric: Metric['name'];
+  name: Metric['name'];
   route?: string;
 }
 
@@ -33,7 +33,7 @@ type MetricsResponse = {
 };
 
 export const getMetric = async ({
-  metric,
+  name,
   device,
   period,
   route,
@@ -42,7 +42,7 @@ export const getMetric = async ({
     .select(groupByPeriod(period))
     .avg('value as avg_value')
     .where({
-      name: metric,
+      name,
       device,
     })
     .andWhere('created_at', '>', createdAt(period))
