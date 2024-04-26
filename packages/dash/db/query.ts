@@ -1,4 +1,4 @@
-import { Duration, unixTimestamp } from '@/lib/common';
+import { Duration, msToSeconds, unixTimestamp } from '@/lib/common';
 import _knex, { Knex } from 'knex';
 import { Metric } from 'knex/types/tables';
 import { sumBy, toNumber } from 'lodash-es';
@@ -54,12 +54,12 @@ export const getMetric = async ({
     .groupBy('date');
 
   const sum = sumBy(intervals, 'avg_value');
-  const average = sum ? toNumber((sum / intervals.length).toFixed(2)) : 0;
+  const average = sum ? msToSeconds((sum / intervals.length)) : 0;
   return {
     average,
     intervals: intervals.map((item) => ({
       ...item,
-      avg_value: toNumber(item.avg_value.toFixed(2)),
+      avg_value: msToSeconds(item.avg_value),
     })),
   };
 };
@@ -84,6 +84,7 @@ export async function up(knex: Knex): Promise<void> {
 
       table.timestamp('created_at').defaultTo(knex.fn.now());
     });
+    console.info('Table initialized successfully.');
   } catch (error) {
     console.warn(error);
   }

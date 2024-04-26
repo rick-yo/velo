@@ -3,6 +3,9 @@ import { Metric } from 'knex/types/tables';
 import { toNumber } from 'lodash-es';
 import { headers } from 'next/headers';
 
+/**
+ * Use `GET` method here, so we don't need to handle CORS, and GET method cost less data than POST.
+ */
 export async function GET(request: Request) {
   const ip = getIP();
   const ua = headers().get('user-agent');

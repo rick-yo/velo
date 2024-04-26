@@ -73,6 +73,10 @@ importers:
         version: 1.0.0-beta.6(@algolia/client-search@4.23.3)(@types/node@20.12.7)(@types/react@18.2.79)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(search-insights@2.13.0)(typescript@5.4.5)
 
   packages/sdk:
+    dependencies:
+      web-vitals:
+        specifier: ^3.5.2
+        version: 3.5.2
     devDependencies:
       typescript:
         specifier: ^5.4.5
@@ -3418,6 +3422,9 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  web-vitals@3.5.2:
+    resolution: {integrity: sha512-c0rhqNcHXRkY/ogGDJQxZ9Im9D19hDihbzSQJrsioex+KnFgmMzBiy57Z1EjkhX/+OjyBpclDCzz2ITtjokFmg==}
 
   which-boxed-primitive@1.0.2:
     resolution: {integrity: sha512-bwZdv0AKLpplFY2KZRX6TvyuN7ojjr7lwkg6ml0roIy9YeuSr7JS372qlNW18UQYzgYK9ziGcerWqZOmEn9VNg==}
@@ -7161,6 +7168,8 @@ snapshots:
       '@vue/shared': 3.4.25
     optionalDependencies:
       typescript: 5.4.5
+
+  web-vitals@3.5.2: {}
 
   which-boxed-primitive@1.0.2:
     dependencies:

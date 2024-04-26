@@ -18,7 +18,7 @@ function seed() {
       device: Math.random() > 0.5 ? 'mobile' : 'desktop',
       route: new URL(faker.internet.url()).pathname,
       name: sample(['CLS', 'FCP', 'FID', 'INP', 'LCP', 'TTFB']),
-      value: Math.random() * 10,
+      value: Math.random() * 5000,
       metric_id: null,
       created_at: unixTimestamp(faker.date.recent({ days: 30 }).getTime()),
     };

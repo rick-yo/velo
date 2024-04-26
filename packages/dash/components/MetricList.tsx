@@ -7,7 +7,7 @@ import { PropsWithChildren } from 'react';
 
 export function MetricList({ children }: PropsWithChildren) {
   const searchParams = useSearchParams();
-  const metric = searchParams.get('metric') ?? 'LCP';
+  const metric = searchParams.get('name') ?? 'LCP';
   const setSearchParam = useSetSearchParam();
 
   return (
@@ -16,7 +16,7 @@ export function MetricList({ children }: PropsWithChildren) {
         value={metric}
         columns="1"
         gap="2"
-        onValueChange={(metric) => setSearchParam('metric', metric)}
+        onValueChange={(metric) => setSearchParam('name', metric)}
       >
         {children}
       </RadioCards.Root>

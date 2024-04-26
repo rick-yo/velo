@@ -1,4 +1,5 @@
-import { Metric } from "knex/types/tables";
+import { Metric } from 'knex/types/tables';
+import { toNumber } from 'lodash-es';
 
 export function unixTimestamp(ms = new Date().getTime()) {
   return Math.floor(ms / 1000);
@@ -24,3 +25,7 @@ export const metricNames: { value: Metric['name']; label: string }[] = [
   { label: 'First Contentful Paint', value: 'FCP' },
   { label: 'Interaction to Next Paint', value: 'INP' },
 ];
+
+export function msToSeconds(ms: number) {
+  return toNumber((ms / 1000).toFixed(2));
+}

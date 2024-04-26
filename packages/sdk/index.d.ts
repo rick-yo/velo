@@ -1,1 +1,4 @@
-export function setupCounter(element: HTMLButtonElement): void
+export function register(
+  baseURL: string,
+  getRoutePath?: () => string
+): () => void;

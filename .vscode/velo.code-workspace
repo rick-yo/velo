@@ -7,6 +7,9 @@
       "path": "../packages/document"
     },
     {
+      "path": "../packages/sdk"
+    },
+    {
       "path": ".."
     }
   ],
